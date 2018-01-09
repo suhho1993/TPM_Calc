@@ -1,0 +1,57 @@
+SHIM MEASURE GRUB BINARY
+--
+search.fs_uuid cf56671a-9eca-4c11-93ec-6ea3cdfd7bb9 root hd0,gpt2
+set prefix=(hd1,gpt2)/boot/grub
+configfile=(hd1,gpt2)/boot/grub/grub.cfg 
+--
+[ -s (hd1,gpt2)/boot/grub/grubenv ]
+set have_grubenv=true
+load_env
+[  ]
+set default=10
+[ xy = xy ]
+menuentry_id_option=--id
+export menuentry_id_option
+[  ]
+[ xy = xy ]
+font=unicode
+loadfont unicode
+set gfxmode=auto
+load_video
+[ xy = xy ]
+insmod all_video
+insmod gfxterm
+set locale_dir=(hd1,gpt2)/boot/grub/locale
+set lang=en_US
+insmod gettext
+terminal_output gfxterm
+--
+setparams Ubuntu
+recordfail
+set recordfail=1
+[ -n true ]
+[ -z  ]
+save_env recordfail
+load_video
+[ xy = xy ]
+insmod all_video
+gfxmode text
+set gfxpayload=text
+[ text = keep ]
+set vt_handoff=
+insmod gzio
+[ xefi = xxen ]
+insmod part_gpt
+insmod ext2
+set root=hd0,gpt2
+[ xy = xy ]
+search --no-floppy --fs-uuid --set=root --hint-bios=hd0,gpt2 --hint-efi=hd0,gpt2 --hint-baremetal=ahci0,gpt2  cf56671a-9eca-4c11-93ec-6ea3cdfd7bb9
+echo    'Loading Linux 4.4.0-104-generic ...'
+linux   /boot/vmlinuz-4.4.0-104-generic.efi.signed root=UUID=cf56671a-9eca-4c11-93ec-6ea3cdfd7bb9 ro  quiet splash 
+--
+SHIM MEASURE Kernel
+--
+initrd  /boot/initrd.img-4.4.0-104-generic
+--
+SHIM MEASURE initrd
+--
