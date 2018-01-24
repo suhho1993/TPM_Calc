@@ -1,9 +1,7 @@
-SHIM MEASURE GRUB BINARY
---
+GRUB
 search.fs_uuid cf56671a-9eca-4c11-93ec-6ea3cdfd7bb9 root hd0,gpt2
 set prefix=(hd1,gpt2)/boot/grub
-configfile=(hd1,gpt2)/boot/grub/grub.cfg 
---
+configfile (hd1,gpt2)/boot/grub/grub.cfg
 [ -s (hd1,gpt2)/boot/grub/grubenv ]
 set have_grubenv=true
 load_env
@@ -25,7 +23,23 @@ set locale_dir=(hd1,gpt2)/boot/grub/locale
 set lang=en_US
 insmod gettext
 terminal_output gfxterm
---
+[  = 1 ]
+[ xy = xy ]
+set timeout_style=menu
+set timeout=10
+set menu_color_normal=white/black
+set menu_color_highlight=black/light-gray
+background_color 44,0,30,0
+clear
+[  != 1 ]
+[ -e (hd1,gpt2)/boot/grub/gfxblacklist.txt ]
+set linux_gfx_mode=keep
+export linux_gfx_mode
+UBUNTU
+MENUENTRY
+SYSTEM
+[ -f (hd1,gpt2)/boot/grub/custom.cfg ]
+[ -z (hd1,gpt2)/boot/grub -a -f (hd1,gpt2)/boot/grub/custom.cfg ]
 setparams Ubuntu
 recordfail
 set recordfail=1
@@ -35,23 +49,17 @@ save_env recordfail
 load_video
 [ xy = xy ]
 insmod all_video
-gfxmode text
-set gfxpayload=text
-[ text = keep ]
-set vt_handoff=
+gfxmode keep
+set gfxpayload=keep
+[ keep = keep ]
+set vt_handoff=vt.handoff=7
 insmod gzio
 [ xefi = xxen ]
 insmod part_gpt
 insmod ext2
 set root=hd0,gpt2
 [ xy = xy ]
-search --no-floppy --fs-uuid --set=root --hint-bios=hd0,gpt2 --hint-efi=hd0,gpt2 --hint-baremetal=ahci0,gpt2  cf56671a-9eca-4c11-93ec-6ea3cdfd7bb9
-echo    'Loading Linux 4.4.0-104-generic ...'
-linux   /boot/vmlinuz-4.4.0-104-generic.efi.signed root=UUID=cf56671a-9eca-4c11-93ec-6ea3cdfd7bb9 ro  quiet splash 
---
-SHIM MEASURE Kernel
---
-initrd  /boot/initrd.img-4.4.0-104-generic
---
-SHIM MEASURE initrd
---
+search --no-floppy --fs-uuid --set=root --hint-bios=hd0,gpt2 --hint-efi=hd0,gpt2 --hint-baremetal=ahci0,gpt2 cf56671a-9eca-4c11-93ec-6ea3cdfd7bb9
+linuxefi /boot/vmlinuz-4.4.0-104-generic.efi.signed root=UUID=cf56671a-9eca-4c11-93ec-6ea3cdfd7bb9 ro quiet splash vt.handoff=7
+KERNEL
+KERNEL
