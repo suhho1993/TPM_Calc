@@ -13,7 +13,6 @@
 
 /*************************** HEADER FILES ***************************/
 #include <stdio.h>
-#include <memory.h>
 #include <string.h>
 #include "sha256.h"
 #include <stdlib.h>
@@ -37,7 +36,7 @@ int sha256_calc(char *line, BYTE* rt_v)
 			printf("fileopen fail\n");
 			return -1;
 		}
-		size_t sizeof_FILE = 614192;
+		size_t sizeof_FILE = 615216;
 		//fseek(file,0,SEEK_END);
 		//size_t sizeof_FILE = ftell(file);
 		//fseek(file,0,SEEK_SET);
@@ -57,8 +56,8 @@ int sha256_calc(char *line, BYTE* rt_v)
 		free(data);
 		return 1;
 	}
-	else if(!strncmp(line,"KERNEL",sizeof(char)*6)){
-		printf("this is kernel\n");
+	else if(!strncmp(line,"KERNEL_1",sizeof(char)*8)){
+		printf("this is kernel_2\n");
 		FILE* file = fopen("KERNEL.efi","r");
 		if(!file){
 			printf("fileopen fail\n");
@@ -81,7 +80,30 @@ int sha256_calc(char *line, BYTE* rt_v)
 		free(data);
 		return 1;
 	}
-	else if(!strncmp(line,"UBUNTU",sizeof(char)*6)){
+	else if(!strncmp(line,"KERNEL_2",sizeof(char)*8)){
+		printf("this is kernel_2\n");
+		FILE* file = fopen("KERNEL_2.efi","r");
+		if(!file){
+			printf("fileopen fail\n");
+			return -1;
+		}
+		size_t sizeof_FILE = 7104528;
+
+		void* data =NULL;
+		data= malloc(sizeof_FILE);
+		if(!data){	
+			printf("data malloc fail\n");
+			return -1;
+		}
+		SHA256_CTX ctx;
+		fread(data,sizeof_FILE,1,file);
+		sha256_init(&ctx);
+		sha256_update(&ctx, data+0x200,sizeof_FILE-0x200);
+		sha256_final(&ctx, rt_v);
+		sha256_print(rt_v);
+		free(data);
+		return 1;
+	}else if(!strncmp(line,"UBUNTU",sizeof(char)*6)){
 		printf("this is UBUNTU\n");
 		FILE* file = fopen("UBUNTU.txt","r");
 		if(!file){
@@ -109,14 +131,14 @@ int sha256_calc(char *line, BYTE* rt_v)
 		free(data);
 		return 1;
 	}
-	else if(!strncmp(line,"MENU",sizeof(char)*4)){
-		printf("this is MENU\n");
-		FILE* file = fopen("MENUENTRY.txt","r");
+	else if(!strncmp(line,"UBUNTU2",sizeof(char)*7)){
+		printf("this is UBUNTU2\n");
+		FILE* file = fopen("UNUNTU2.txt","r");
 		if(!file){
 			printf("fileopen fail\n");
 			return -1;
 		}
-		size_t sizeof_FILE =2889;
+		size_t sizeof_FILE =831;
 
 		char* data =NULL;
 		data= malloc(sizeof_FILE);
@@ -173,7 +195,7 @@ int sha256_calc(char *line, BYTE* rt_v)
 		printf("size: %d /// %s\n", len, line);
 		SHA256_CTX ctx;
 		sha256_init(&ctx);
-		sha256_update(&ctx, (unsigned char*)line, len);
+		sha256_update(&ctx, line, len);
 		sha256_final(&ctx, rt_v);
 		sha256_print(rt_v);
 		return 1;
@@ -211,15 +233,16 @@ void sha256_extend(BYTE* old, BYTE* new)
 	return ;
 }	
 
-int main()
+int main(int argc, char* argv[])
 {
 	BYTE old[32]={0,};
 	BYTE new[32]={0,};
 
 	FILE * file;
-	char * line = malloc(sizeof(char)*19785);
-	size_t len = 19785;
-	file = fopen("ToMeasure.txt", "r");
+	char * line = malloc(sizeof(char)*150);
+	size_t len = 150;
+	printf("%s\n",argv[1]);
+	file = fopen(argv[1], "r");
 	if(!file){
 		printf("ToMeasure open fail\n");
 		return 0;
