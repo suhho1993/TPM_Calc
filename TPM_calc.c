@@ -191,7 +191,7 @@ int sha256_calc(char *line, BYTE* rt_v)
 		printf("this is CMD\n");//	size_t sizeof_FILE =615216;
 		size_t len = strlen(line);
 		len-=1;
-		line[len-1]='\0';
+		line[len]='\0';
 		printf("size: %d /// %s\n", len, line);
 		SHA256_CTX ctx;
 		sha256_init(&ctx);
